@@ -1,0 +1,64 @@
+################### How to make a spatial polygon ############################
+
+# Make some sample code
+# in a polygon the first and last rows have to be the same
+# as they have to connect to form a polygon
+
+# Make some dummy data
+ref <- c(1:6)
+boundary <- "boundary1"
+Northings <- c(9781550,9782650,9783550,9781670,9781550,9781550)
+Eastings <- c(491064, 492364,493064,492564,491564,491064)
+
+# Make turn this into a datafame creatively called "y"
+y<- data.frame(ref,boundary,Northings,Eastings)
+
+# check out what the data.frame looks like
+head(y)
+
+# we'll need to use library "sp" so install it if you haven't
+library(sp)
+
+
+########## 3 steps to make a SpatialPolygons object ######## 
+
+# the basis of this code comes from @Spacedman
+# at: http://gis.stackexchange.com/questions/18311/instantiating-spatial-polygon-without-using-a-shape-file-in-r
+
+# Step 1: make polygon from data.frame "y", using  Eastings (column 4) and Northings (column 3) in a "x,y" form
+poly <- Polygon(y[,4:3])
+poly  
+?Polygon
+
+# Step 2: turn p into a polygon object 
+polyobj <- Polygons(list(poly),1)   
+polyobj	
+
+# Step 3: turn p into a SpatialPolygons object this is different from just
+# a polygon in that it now has a projection slot which we can manipulate (e.g. longlat to UTM etc.)
+
+spatpoly <- SpatialPolygons(list(polyobj))   	 # SpatialPolygons object
+spatpoly
+
+# in this case we will assign the projection to UTM for Papua New Guinea
+proj4string(spatpoly) <- CRS("+proj=utm +zone=55 +south")
+
+########## Finding the area of a SpatialPolygons object ######## 
+
+# the great advantage with UTM is becauuse it is a is very easy to calculate area because it is 
+# both square and metric
+
+# we can just find the meterage by lloking at the "area" slot or we can use the 
+# gArea function from library "rgeos"
+
+library(rgeos)
+
+# get area in meters
+gArea(spatpoly, byid=FALSE)
+
+# get area in hectares
+gArea(spatpoly, byid=FALSE)/(100^2)
+
+# plot
+plot(spatpoly)
+
