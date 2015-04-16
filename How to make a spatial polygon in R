@@ -28,7 +28,6 @@ library(sp)
 # Step 1: make polygon from data.frame "y", using  Eastings (column 4) and Northings (column 3) in a "x,y" form
 poly <- Polygon(y[,4:3])
 poly  
-?Polygon
 
 # Step 2: turn p into a polygon object 
 polyobj <- Polygons(list(poly),1)   
